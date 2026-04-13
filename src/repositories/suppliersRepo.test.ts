@@ -34,7 +34,7 @@ describe('SuppliersRepository', () => {
     describe('findAll', () => {
         it('should return all suppliers', async () => {
             const mockResults = [
-                { supplier_id: 1, name: 'Test Supplier', description: 'Test', contact_person: 'John', email: 'john@test.com', phone: '555-1234', active: true, verified: true }
+                { supplier_id: 1, name: 'Test Supplier', description: 'Test', contact_person: 'John', email: 'john@test.com', phone: '555-1234', active: true, verified: true, last_updated: '2026-01-01T00:00:00.000Z' }
             ];
             mockDb.all.mockResolvedValue(mockResults);
 
@@ -44,6 +44,7 @@ describe('SuppliersRepository', () => {
             expect(result).toHaveLength(1);
             expect(result[0].supplierId).toBe(1);
             expect(result[0].name).toBe('Test Supplier');
+            expect(result[0].lastUpdated).toBe('2026-01-01T00:00:00.000Z');
         });
 
         it('should return empty array when no suppliers exist', async () => {
@@ -65,7 +66,8 @@ describe('SuppliersRepository', () => {
                 email: 'john@test.com',
                 phone: '555-1234',
                 active: true,
-                verified: true
+                verified: true,
+                last_updated: '2026-01-01T00:00:00.000Z'
             };
             mockDb.get.mockResolvedValue(mockResult);
 
@@ -74,6 +76,7 @@ describe('SuppliersRepository', () => {
             expect(mockDb.get).toHaveBeenCalledWith('SELECT * FROM suppliers WHERE supplier_id = ?', [1]);
             expect(result?.supplierId).toBe(1);
             expect(result?.name).toBe('Test Supplier');
+            expect(result?.lastUpdated).toBe('2026-01-01T00:00:00.000Z');
         });
 
         it('should return null when supplier not found', async () => {
@@ -106,17 +109,19 @@ describe('SuppliersRepository', () => {
                 email: 'jane@test.com',
                 phone: '555-5678',
                 active: true,
-                verified: false
+                verified: false,
+                last_updated: '2026-01-01T00:00:00.000Z'
             });
 
             const result = await repository.create(newSupplier);
 
             expect(mockDb.run).toHaveBeenCalledWith(
-                'INSERT INTO suppliers (name, description, contact_person, email, phone, active, verified) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                ['New Supplier', 'New Description', 'Jane Doe', 'jane@test.com', '555-5678', true, false]
+                'INSERT INTO suppliers (name, description, contact_person, email, phone, active, verified, last_updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                ['New Supplier', 'New Description', 'Jane Doe', 'jane@test.com', '555-5678', true, false, expect.any(String)]
             );
             expect(result.supplierId).toBe(2);
             expect(result.name).toBe('New Supplier');
+            expect(result.lastUpdated).toBe('2026-01-01T00:00:00.000Z');
         });
     });
 
@@ -133,16 +138,18 @@ describe('SuppliersRepository', () => {
                 email: 'john@test.com',
                 phone: '555-1234',
                 active: true,
-                verified: true
+                verified: true,
+                last_updated: '2026-01-02T00:00:00.000Z'
             });
 
             const result = await repository.update(1, updateData);
 
             expect(mockDb.run).toHaveBeenCalledWith(
-                'UPDATE suppliers SET name = ? WHERE supplier_id = ?',
-                ['Updated Supplier', 1]
+                'UPDATE suppliers SET name = ?, last_updated = ? WHERE supplier_id = ?',
+                ['Updated Supplier', expect.any(String), 1]
             );
             expect(result.name).toBe('Updated Supplier');
+            expect(result.lastUpdated).toBe('2026-01-02T00:00:00.000Z');
         });
 
         it('should throw NotFoundError when supplier does not exist', async () => {
