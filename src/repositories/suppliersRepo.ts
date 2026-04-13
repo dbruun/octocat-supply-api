@@ -54,7 +54,11 @@ export class SuppliersRepository {
    */
   async create(supplier: Omit<Supplier, 'supplierId'>): Promise<Supplier> {
     try {
-      const { sql, values } = buildInsertSQL('suppliers', supplier);
+      const supplierToCreate = {
+        ...supplier,
+        lastUpdated: supplier.lastUpdated ?? new Date().toISOString(),
+      };
+      const { sql, values } = buildInsertSQL('suppliers', supplierToCreate);
       const result = await this.db.run(sql, values);
 
       const createdSupplier = await this.findById(result.lastID || 0);
@@ -73,7 +77,11 @@ export class SuppliersRepository {
    */
   async update(id: number, supplier: Partial<Omit<Supplier, 'supplierId'>>): Promise<Supplier> {
     try {
-      const { sql, values } = buildUpdateSQL('suppliers', supplier, 'supplier_id = ?');
+      const supplierToUpdate = {
+        ...supplier,
+        lastUpdated: supplier.lastUpdated ?? new Date().toISOString(),
+      };
+      const { sql, values } = buildUpdateSQL('suppliers', supplierToUpdate, 'supplier_id = ?');
       const result = await this.db.run(sql, [...values, id]);
 
       if (result.changes === 0) {

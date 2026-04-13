@@ -36,6 +36,10 @@
  *         verified:
  *           type: boolean
  *           description: Whether the supplier is verified
+ *         lastUpdated:
+ *           type: string
+ *           format: date-time
+ *           description: Timestamp for when the supplier was last updated
  */
 export interface Supplier {
   supplierId: number;
@@ -46,4 +50,5 @@ export interface Supplier {
   phone: string;
   active: boolean;
   verified: boolean;
+  lastUpdated?: string;
 }

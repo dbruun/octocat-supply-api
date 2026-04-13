@@ -1518,6 +1518,11 @@
                     "description": {
                         "type": "string",
                         "description": "Additional details about the supplier"
+                    },
+                    "lastUpdated": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Timestamp for when the supplier was last updated"
                     }
                 }
             }
